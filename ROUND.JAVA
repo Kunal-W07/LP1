@@ -1,0 +1,63 @@
+import java.util.*;
+ 
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int wtime[], btime[], rtime[], num, quantum;
+        wtime = new int[10];
+        btime = new int[10];
+        rtime = new int[10];
+ 
+        System.out.print("Enter number of processes (MAX 10): ");
+        num = s.nextInt();
+ 
+        System.out.println("Enter burst time for each process:");
+        for (int i = 0; i < num; i++) {
+            System.out.print("P[" + (i + 1) + "]: ");
+            btime[i] = s.nextInt();
+            rtime[i] = btime[i];
+            wtime[i] = 0;
+        }
+ 
+        System.out.print("\nEnter quantum: ");
+        quantum = s.nextInt();
+ 
+        int rp = num;
+        int i = 0;
+        int time = 0;
+        List<String> ganttChart = new ArrayList<>();
+        List<Integer> ganttTime = new ArrayList<>();
+        ganttTime.add(time);
+ 
+        while (rp != 0) {
+            if (rtime[i] > 0) {
+                if (rtime[i] > quantum) {
+                    time += quantum;
+                    rtime[i] -= quantum;
+                } else {
+                    time += rtime[i];
+                    rtime[i] = 0;
+                    rp--;
+                }
+                ganttChart.add("P[" + (i + 1) + "]");
+                ganttTime.add(time);
+            }
+ 
+            i++;
+            if (i == num) {
+                i = 0;
+            }
+        }
+ 
+        System.out.println("\n\nGantt Chart:");
+        for (String process : ganttChart) {
+            System.out.print("| " + process + " ");
+        }
+        System.out.println("|");
+ 
+        for (Integer t : ganttTime) {
+            System.out.print(t + "      ");
+        }
+        System.out.println();
+    }
+}
