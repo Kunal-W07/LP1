@@ -1,0 +1,146 @@
+ArithmeticOperations.c
+#include “jni.h”
+#include “ArithmeticOperations.h”
+JNIEXPORT jint JNICALL Java_ArithmeticOperations_add(JNIEnv *env, jobject obj, jint a, jint b) {
+return a + b;
+}
+JNIEXPORT jint JNICALL Java_ArithmeticOperations_subtract(JNIEnv *env, jobject obj, jint a, jint b) {
+return a - b;
+}
+JNIEXPORT jint JNICALL Java_ArithmeticOperations_multiply(JNIEnv *env, jobject obj, jint a, jint b) {
+return a * b;
+}
+JNIEXPORT jint JNICALL Java_ArithmeticOperations_divide(JNIEnv *env, jobject obj, jint a, jint b) {
+if (b == 0) {
+return 0; // Handle division by zero
+}
+return a / b;
+}
+
+Explanation of above code ArithmeticOperations.java:
+•	This is the name of the Java source file being compiled, which contains the declaration of native methods. The javac command will compile this file into a bytecode .class file and also generate a corresponding JNI header file (ArithmeticOperations.h) for any native methods declared in the ArithmeticOperations class.
+
+
+
+ArithmeticOperations.c
+
+1.	JNIEXPORT and JNICALL:
+•	JNIEXPORT: This is a macro that ensures the function is exported properly and visible to the JNI. It's used to mark the function as callable from Java.
+•	JNICALL: This is another macro that ensures the calling convention is correct for JNI functions. It allows the JVM to call this function from the native library.
+2.	Jint:
+
+
+•	This is the return type of the function. In JNI, jint is the C equivalent of Java’s int data type. So, this function returns an integer.
+ 
+3.	Java_ArithmeticOperations_multiply:
+•	This is the function name. JNI uses a naming convention where the function name must start with Java_, followed by the fully qualified name of the Java class and method.
+•	In this case:
+•	ArithmeticOperations is the name of the Java class.
+•	multiply is the name of the method in that class.
+•	The full method name is Java_ArithmeticOperations_multiply, meaning it corresponds to the multiply method in the ArithmeticOperations Java class.
+4.	(JNIEnv *env, jobject obj, jint a, jint b):
+•	These are the function parameters.
+•	JNIEnv *env: This is a pointer to the JNI environment, which allows interaction with the JVM. Through this pointer, you can call Java methods, access Java objects, and manipulate Java arrays from C.
+•	jobject obj: This is a reference to the Java object from which this native method was called. It corresponds to the instance of the ArithmeticOperations class.
+•	jint a and jint b: These are the two integer parameters passed from the Java method to the native method. jint is the JNI equivalent of the int data type in Java.
+Overall Meaning:
+This C function Java_ArithmeticOperations_multiply represents a native method in the ArithmeticOperations Java class. It takes two integers (a and b), multiplies them (presumably in the function body), and returns the result as a jint (Java int). The JNIEnv
+*env allows interaction with the JVM, and jobject obj represents the calling Java object.
+This method is designed to be called from Java code using JNI to perform the multiplication natively in C.
+
+
+
+
+ArithmeticOperations.java
+public class ArithmeticOperations
+{
+public native int add(int a, int b);
+public native int subtract(int a, int b); public native int multiply(int a, int b); public native int divide(int a, int b);
+static
+{
+System.loadLibrary(ArithmeticOperations);
+}
+public static void main(String[] args)
+{
+ArithmeticOperations ops = new ArithmeticOperations();
+ 
+int a = 10, b = 5;
+System.out.println(Addition: + ops.add(a, b)); 
+System.out.println(Subtraction:  + ops.subtract(a, b)); 
+System.out.println(Multiplication: &quot; + ops.multiply(a, b)); System.out.println(Division: + ops.divide(a, b));
+}
+}
+
+commands for execution on terminal
+1.	javac ArithmeticOperations.java
+
+2.	javac -h .  ArithmeticOperations.java
+
+3.	gcc -I $JAVA_HOME/include -I $JAVA_HOME/include/linux  -shared -o libArithmeticOperations.so ArithmeticOperations.c
+
+4.	java -Djava.library.path=. ArithmeticOperations 
+
+
+or use this path
+student@student:~/Downloads/5 DLl$ javac ArithmeticOperations.java student@student:~/Downloads/5 DLl$ javac -h . ArithmeticOperations.java student@student:~/Downloads/5 DLl$ gcc -I"/usr/lib/jvm/java-11-openjdk- amd64/include" -I"/usr/lib/jvm/java-11-openjdk-amd64/include/linux" -shared -o libArithmeticOperations.so ArithmeticOperations.c 
+
+student@student:~/Downloads/5 DLl$ java -Djava.library.path=.
+ArithmeticOperations 
+
+Addition: 15
+Subtraction: 5
+Multiplication: 50
+Division: 2
+
+
+5.	java -Djava.library.path=. ArithmeticOperations
+
+Addition: 15
+Subtraction: 5
+Multiplication: 50
+Division: 2
+Explanation of above commands 1
+1.	The javac command you provided is used to compile the Java file and generate JNI header files. Here’s a breakdown of the command:
+javac -h . ArithmeticOperations.java
+
+•	javac:
+•	This is the Java compiler command that compiles .java source files into .class bytecode files.
+•	-h .:
+•	This option is used to generate JNI header files (.h files) for the Java class that contains native methods.
+•	The -h option specifies the directory where the JNI header files will be generated.
+•	. refers to the current directory, so this command will create the header file for the native methods in the current directory.
+
+
+
+gcc -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -shared -o libArithmeticOperations.so ArithmeticOperations.c what is the meaning of above instruction
+
+Above command explanation
+Breakdown:
+1.	gcc: This is the GNU Compiler Collection, used for compiling C/C++ code.
+2.	-I"$JAVA_HOME/include" and -I"$JAVA_HOME/include/linux":
+•	These flags specify the include directories.
+•	-I tells the compiler where to look for header files (in this case, the JNI header files).
+•	"$JAVA_HOME/include" is the path to the general JNI header files, which contain declarations for the Java Native Interface.
+•	"$JAVA_HOME/include/linux" is the platform-specific directory for Linux, which contains additional header files specific to the operating system.
+3.	-shared: This option tells the compiler to generate a shared library (i.e., a .so file on Linux). Shared libraries can be dynamically linked to applications at runtime.
+4.	-o libArithmeticOperations.so: This specifies the output file. The -o flag is used to define the name of the output file, and in this case, it's creating a shared object file (libArithmeticOperations.so).
+5.	ArithmeticOperations.c: This is the C source file that you're compiling, which contains the native methods that will be used by the Java code through JNI.
+Overall:
+This command compiles the C file ArithmeticOperations.c into a shared library named libArithmeticOperations.so, while also specifying the necessary JNI header file paths for the compiler.
+
+
+Explanation =	java -Djava.library.path= . ArithmeticOperations
+
+Breakdown:
+1.	java: This is the Java runtime command that launches the Java Virtual Machine (JVM) to run Java programs.
+2.	-Djava.library.path=.:
+•	This is a JVM argument that specifies the path where the JVM should look for native libraries (like .so files on Linux).
+•	-D is used to define a system property.
+ 
+•	java.library.path is the system property that tells the JVM where to find native shared libraries.
+•	. refers to the current directory. So, in this case, the JVM will look in the current directory for the shared library (e.g., libArithmeticOperations.so).
+3.	ArithmeticOperations:
+•	This is the name of the Java class that contains the main method to be executed.
+•	It is also the class that interacts with the native shared library through JNI.
+Overall:
+This command runs the Java class ArithmeticOperations and tells the JVM to look for the required native libraries (like libArithmeticOperations.so) in the current directory (.) using the java.library.path option. The shared library contains native methods that the Java program will invoke using JNI.
